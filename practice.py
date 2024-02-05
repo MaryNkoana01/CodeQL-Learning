@@ -14,4 +14,3 @@ result = insecure_eval(user_input)
 if result is not None:
     print(f"Eval result: {result}")
 
-
