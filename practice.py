@@ -1,18 +1,17 @@
-import subprocess
-
-def execute_command(command):
+def insecure_eval(input_data):
     try:
-        # Introducing a command injection vulnerability
-        result = subprocess.check_output(command, shell=True, encoding="utf-8")
+        # Introducing a code injection vulnerability
+        result = eval(input_data)
         return result
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Error: {e}")
         return None
 
 # Simulating untrusted user input
-user_input = "echo Hello, this is a potential vulnerability!"
-result = execute_command(user_input)
+user_input = "__import__('os').system('echo This is a potential vulnerability!')"
+result = insecure_eval(user_input)
 
 if result is not None:
-    print(f"Command output: {result}")
+    print(f"Eval result: {result}")
+
 
