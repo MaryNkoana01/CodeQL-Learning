@@ -1,3 +1,6 @@
+# This workflow is designed to analyze Python code using CodeQL on Windows.
+# It triggers on pushes and pull requests to the 'main' branch.
+
 name: "CodeQL"
 
 on:
@@ -7,29 +10,35 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # Job to perform CodeQL analysis on Python code
   analyze:
     name: Analyze
     runs-on: windows-latest
     permissions:
+      # Required permissions for security events and reading repository content
       security-events: write
       actions: read
       contents: read
 
+    # Matrix strategy to set up different configurations for the job
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'python' ]
+        language: [ 'python' ]  # Specify Python as the language for analysis
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # Step to check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
+      # Step to initialize CodeQL tools for scanning
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      # Step to perform CodeQL analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
