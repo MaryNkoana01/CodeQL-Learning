@@ -1,12 +1,16 @@
-def divide_numbers(a, b):
+def read_file_content(file_name):
     try:
-        result = a / b
-        return result
-    except ZeroDivisionError:
-        print("Error: Cannot divide by zero.")
+        # Introducing a path traversal vulnerability
+        with open(file_name, 'r') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        print("Error: File not found.")
         return None
 
-result = divide_numbers(10, 1)
+# Simulating untrusted user input
+user_input = "../secret_file.txt"
+result = read_file_content(user_input)
 
 if result is not None:
-    print(f"The result is: {result}")
+    print(f"The file content is: {result}")
