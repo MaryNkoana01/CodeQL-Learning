@@ -1,13 +1,6 @@
-import sqlite3
-
 def divide_numbers(a, b):
     try:
-        # Introducing a SQL injection vulnerability
-        connection = sqlite3.connect(":memory:")
-        cursor = connection.cursor()
-        cursor.execute(f"SELECT {a} / {b}")
-        result = cursor.fetchone()[0]
-        connection.close()
+        result = a / b
         return result
     except ZeroDivisionError:
         print("Error: Cannot divide by zero.")
