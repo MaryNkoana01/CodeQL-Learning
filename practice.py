@@ -1,16 +1,18 @@
-def read_file_content(file_name):
+import subprocess
+
+def execute_command(command):
     try:
-        # Introducing a path traversal vulnerability
-        with open(file_name, 'r') as file:
-            content = file.read()
-        return content
-    except FileNotFoundError:
-        print("Error: File not found.")
+        # Introducing a command injection vulnerability
+        result = subprocess.check_output(command, shell=True, encoding="utf-8")
+        return result
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
         return None
 
 # Simulating untrusted user input
-user_input = "../secret_file.txt"
-result = read_file_content(user_input)
+user_input = "echo Hello, this is a potential vulnerability!"
+result = execute_command(user_input)
 
 if result is not None:
-    print(f"The file content is: {result}")
+    print(f"Command output: {result}")
+
