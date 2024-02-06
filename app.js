@@ -1,34 +1,78 @@
-// Example code with security vulnerabilities
+const express = require("express");
+const app = express();
+const PORT = 5000;
+const userData = require("./MOCK_DATA.json");
+const graphql = require("graphql")
+const { GraphQLObjectType, GraphQLSchema, GraphQLList, GraphQLID, GraphQLInt, GraphQLString } = graphql
+const { graphqlHTTP } = require("express-graphql")
 
-// Vulnerability 1: Cross-Site Scripting (XSS)
-function displayMessage(message) {
-  document.getElementById("output").innerHTML = message; // Potential XSS vulnerability
-}
+const UserType = new GraphQLObjectType({
+    name: "User",
+    fields: () => ({
+        id: { type: GraphQLInt },
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+    })
+})
 
-// Vulnerability 2: SQL Injection
-function getUserData(username) {
-  var query = "SELECT * FROM users WHERE username = '" + username + "'"; // SQL query with input concatenation
-  // Execute query and return results
-}
+const RootQuery = new GraphQLObjectType({
+    name: "RootQueryType",
+    fields: {
+        getAllUsers: {
+            type: new GraphQLList(UserType),
+            args: { id: {type: GraphQLInt}},
+            resolve(parent, args) {
+                return userData;
+            }
+        },
+        findUserById: {
+            type: UserType,
+            description: "fetch single user",
+            args: { id: {type: GraphQLInt}},
+            resolve(parent, args) {
+                return userData.find((a) => a.id == args.id);
+            }
+        }
+    }
+})
+const Mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: {
+        createUser: {
+            type: UserType,
+            args: {
+                firstName: {type: GraphQLString},
+                lastName: { type: GraphQLString },
+                email: { type: GraphQLString },
+                password: { type: GraphQLString },
+            },
+            resolve(parent, args) {
+                userData.push({
+                    id: userData.length + 1,
+                    firstName: args.firstName,
+                    lastName: args.lastName,
+                    email: args.email,
+                    password: args.password
+                })
+                return args
+            }
+        }
+    }
+})
 
-// Vulnerability 3: Insecure random number generation
-function generateToken() {
-  var token = Math.random(); // Insecure random number generation
-  return token;
-}
+const schema = new GraphQLSchema({query: RootQuery, mutation: Mutation})
+app.use("/graphql", graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+);
 
-// Vulnerability 4: Insecure password hashing
-function hashPassword(password) {
-  return md5(password); // Using weak hashing algorithm MD5
-}
+app.get("/rest/getAllUsers", (req, res) => {
+    res.send(userData)
+   });
 
-// Vulnerability 5: Access control issue
-var isAdmin = false;
-
-function deleteUserData(username) {
-  if (isAdmin) {
-    // Delete user data
-  } else {
-    throw new Error("Access denied"); // Access control issue
-  }
-}
+app.listen(PORT, () => {
+  console.log("Server running");
+});
