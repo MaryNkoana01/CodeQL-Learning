@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]  # Specify Python as the language for analysis
+        language: [ 'javascript' ]  # Specify javascript as the language for analysis
 
     steps:
       # Step to check out the repository code
